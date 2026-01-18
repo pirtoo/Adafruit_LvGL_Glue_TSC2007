@@ -1,0 +1,22 @@
+*.~		# Ignore the gedit temp files
+.gitignore~
+*.swp		# Ignore Vim swap files
+
+# emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+*.pyc
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# VSC and platformio
+.pio
+.vscode
