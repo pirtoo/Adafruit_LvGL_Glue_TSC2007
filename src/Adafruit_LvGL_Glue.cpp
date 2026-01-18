@@ -166,11 +166,11 @@ static void touchscreen_read(struct _lv_indev_drv_t *indev_drv,
 #else //__USE_TOUCHSCREEN_H__
 if (true) {
 #endif //__USE_TOUCHSCREEN_H__
-    uint8_t fifo; // Number of points in touchscreen FIFO
     bool more = false;
 #if TSC2007_TS
     Adafruit_TSC2007 *touch = (Adafruit_TSC2007 *)glue->touchscreen;
 #else
+    uint8_t fifo; // Number of points in touchscreen FIFO
     Adafruit_STMPE610 *touch = (Adafruit_STMPE610 *)glue->touchscreen;
 #endif
     // Before accessing SPI touchscreen, wait on any in-progress
@@ -180,15 +180,21 @@ if (true) {
 #if TSC2007_TS
     if (! digitalRead(glue->tsc_irq_pin)) {
       uint16_t x, y, z1, z2;
-      if (touch->read_touch(&x, &y, &z1, &z2) && (z1 > 100)) {
+      if (touch->read_touch(&x, &y, &z1, &z2) && (z1 > 100) &&
+         (x > TS_MINX) && (x < TS_MAXX) && (y > TS_MINY) && (y < TS_MAXY)) {
         TS_Point p;
         p.x = x;
         p.y = y;
         data->state = LV_INDEV_STATE_PR;  // Is PRESSED
 #else
     if ((fifo = touch->bufferSize())) { // 1 or more points await
-      data->state = LV_INDEV_STATE_PR;  // Is PRESSED
       TS_Point p = touch->getPoint();
+      if ((p.x > TS_MINX) && (p.x < TS_MAXX) && (p.y > TS_MINY) && (p.y < TS_MAXY)) {
+        data->state = LV_INDEV_STATE_PR;  // Is PRESSED
+      } else {
+        // Touch was off the screen area, ignore it
+        return;
+      }
 #endif
       // Serial.printf("%d %d %d\r\n", p.x, p.y, p.z);
       // On big TFT FeatherWing and V2 FeatherWings, raw X axis is flipped??
@@ -213,7 +219,11 @@ if (true) {
         last_y = map(p.x, TS_MAXX, TS_MINX, 0, disp->height() - 1);
         break;
       }
+#if TSC2007_TS
+      more = digitalRead(glue->tsc_irq_pin);
+#else
       more = (fifo > 1); // true if more in FIFO, false if last point
+#endif
 #if defined(NRF52_SERIES)
       // Not sure what's up here, but nRF doesn't seem to always poll
       // the FIFO size correctly, causing false release events. If it
@@ -367,12 +377,10 @@ LvGLStatus Adafruit_LvGL_Glue::begin(Adafruit_SPITFT *tft, Adafruit_TSC2007 *tou
 LvGLStatus Adafruit_LvGL_Glue::begin(Adafruit_SPITFT *tft, Adafruit_STMPE610 *touch,
                                      bool debug) {
 #endif
-  Serial.println("A");
   String LVGL_Arduino = "Hello Arduino! ";
   LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
   Serial.println(LVGL_Arduino);
   lv_init();
-  Serial.println("B");
 #if (LV_USE_LOG)
   if (debug) {
     lv_log_register_print_cb(lv_debug); // Register debug print function

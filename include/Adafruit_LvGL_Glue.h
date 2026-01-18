@@ -13,7 +13,7 @@
 #include <Adafruit_STMPE610.h> // SPI Touchscreen lib
 #endif
 #ifdef __USE_TOUCHSCREEN_H__
-#include <TouchScreen.h>       // ADC touchscreen lib
+//#include <TouchScreen.h>       // ADC touchscreen lib
 #endif //__USE_TOUCHSCREEN_H__
 #ifndef LV_CONF_INCLUDE_SIMPLE
 #define LV_CONF_INCLUDE_SIMPLE
