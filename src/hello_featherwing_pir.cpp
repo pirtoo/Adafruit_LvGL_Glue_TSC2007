@@ -5,20 +5,20 @@
 // so this sketch can be copied-and-pasted to serve as a starting point for
 // other projects. If display is scrambled, check that correct FeatherWing
 // type is selected below (set BIG_FEATHERWING to 0 or 1 as needed).
-// If the display is a V2 with the TSC2007 set FEATHER_V2 to 1.
+// If the display is a V2 with the TSC2007 set TSC2007_TS to 1.
 
 // Prior Adafruit_LvGL_Glue users: see hello_changes example for updates!
 
 #define BIG_FEATHERWING 0 // Set this to 1 for 3.5" (480x320) FeatherWing!
-#ifndef FEATHER_V2
-#define FEATHER_V2 0 // Set this to 1 for V2 TSC2007 touchscreen displays
+#ifndef TSC2007_TS
+#define TSC2007_TS 0 // Set this to 1 for V2 TSC2007 touchscreen displays
 #endif
 
 #include <Arduino.h>
 
 #include <Adafruit_LvGL_Glue.h> // Always include this BEFORE lvgl.h!
 #include <lvgl.h>
-#if FEATHER_V2
+#if TSC2007_TS
 #include <Adafruit_TSC2007.h>
 #include <Wire.h>
 #else
@@ -45,7 +45,7 @@
   Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
 #endif
 
-#if FEATHER_V2
+#if TSC2007_TS
 #define TSC_IRQ STMPE_CS
 Adafruit_TSC2007 ts=Adafruit_TSC2007();
 #else
@@ -83,7 +83,7 @@ void setup(void) {
   tft.begin();
   tft.setRotation(TFT_ROTATION);
 
-#if FEATHER_V2
+#if TSC2007_TS
   if (ts.begin(0x48, &Wire)) {
     pinMode(TSC_IRQ, INPUT);
   } else {

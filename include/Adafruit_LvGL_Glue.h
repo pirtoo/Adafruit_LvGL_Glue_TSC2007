@@ -1,15 +1,13 @@
 #ifndef _ADAFRUIT_LVGL_GLUE_H_
 #define _ADAFRUIT_LVGL_GLUE_H_
 
-#include <Arduino.h>
-
 //#define __USE_TOUCHSCREEN_H__  // Enable use of ADC touchscreen
-#ifndef FEATHER_V2
-#define FEATHER_V2 0 // Set this to 1 for V2 TSC2007 touchscreen displays
+#ifndef TSC2007_TS
+#define TSC2007_TS 0 // Set this to 1 for V2 TSC2007 touchscreen displays
 #endif
 
 #include <Adafruit_SPITFT.h>   // GFX lib for SPI and parallel displays
-#if FEATHER_V2
+#if TSC2007_TS
 #include <Adafruit_TSC2007.h>  // Other SPI touchscreen lib
 #else
 #include <Adafruit_STMPE610.h> // SPI Touchscreen lib
@@ -26,6 +24,7 @@
 #include <Adafruit_ZeroTimer.h> // SAMD-specific timer lib
 #elif defined(ESP32)
 #include <Ticker.h> // ESP32-specific timer lib
+//#define BOARD_HAS_PSRAM // If your ESP32 board has PSRAM enable this
 #endif
 
 typedef enum {
@@ -46,7 +45,7 @@ public:
   Adafruit_LvGL_Glue(void);
   ~Adafruit_LvGL_Glue(void);
   // Different begin() funcs for TSC2007, STMPE610, ADC or no touch
-#if FEATHER_V2
+#if TSC2007_TS
   LvGLStatus begin(Adafruit_SPITFT *tft, Adafruit_TSC2007 *touch,
                    u_int16_t irq_pin, bool debug = false);
 #else
@@ -65,7 +64,7 @@ public:
   bool is_adc_touch; ///< determines if the touchscreen controlelr is ADC based
   bool first_frame;  ///< Tracks if a call to `lv_flush_callback` needs to wait
                      ///< for DMA transfer to complete
-#if FEATHER_V2
+#if TSC2007_TS
   u_int16_t tsc_irq_pin; ///< IRQ pin to check for TSC2007
 #endif
 

@@ -168,7 +168,7 @@ if (true) {
 #endif //__USE_TOUCHSCREEN_H__
     uint8_t fifo; // Number of points in touchscreen FIFO
     bool more = false;
-#if FEATHER_V2
+#if TSC2007_TS
     Adafruit_TSC2007 *touch = (Adafruit_TSC2007 *)glue->touchscreen;
 #else
     Adafruit_STMPE610 *touch = (Adafruit_STMPE610 *)glue->touchscreen;
@@ -177,7 +177,7 @@ if (true) {
     // DMA screen transfer to finish (shared bus).
     disp->dmaWait();
     disp->endWrite();
-#if FEATHER_V2
+#if TSC2007_TS
     if (! digitalRead(glue->tsc_irq_pin)) {
       uint16_t x, y, z1, z2;
       if (touch->read_touch(&x, &y, &z1, &z2) && (z1 > 100)) {
@@ -192,7 +192,7 @@ if (true) {
 #endif
       // Serial.printf("%d %d %d\r\n", p.x, p.y, p.z);
       // On big TFT FeatherWing and V2 FeatherWings, raw X axis is flipped??
-      if ((glue->display->width() == 480) || (glue->display->height() == 480) || FEATHER_V2) {
+      if ((glue->display->width() == 480) || (glue->display->height() == 480) || TSC2007_TS) {
         p.x = (TS_MINX + TS_MAXX) - p.x;
       }
       switch (glue->display->getRotation()) {
@@ -224,7 +224,7 @@ if (true) {
         delay(50);
       }
 #endif
-#if FEATHER_V2
+#if TSC2007_TS
       }
 #endif
     } else {                            // FIFO empty
@@ -359,7 +359,7 @@ LvGLStatus Adafruit_LvGL_Glue::begin(Adafruit_SPITFT *tft, bool debug) {
   return begin(tft, (void *)NULL, debug);
 }
 
-#if FEATHER_V2
+#if TSC2007_TS
 LvGLStatus Adafruit_LvGL_Glue::begin(Adafruit_SPITFT *tft, Adafruit_TSC2007 *touch,
                                      u_int16_t irq_pin,
                                      bool debug) {
@@ -389,7 +389,7 @@ LvGLStatus Adafruit_LvGL_Glue::begin(Adafruit_SPITFT *tft, Adafruit_STMPE610 *to
 
     display = tft;
     touchscreen = (void *)touch;
-#if FEATHER_V2
+#if TSC2007_TS
     tsc_irq_pin = irq_pin;
 #endif
 
