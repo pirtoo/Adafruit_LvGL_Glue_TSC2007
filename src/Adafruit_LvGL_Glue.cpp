@@ -180,6 +180,7 @@ if (true) {
 #if TSC2007_TS
     if (! digitalRead(glue->tsc_irq_pin)) {
       uint16_t x, y, z1, z2;
+      // If we have a touch and it is in the screen area
       if (touch->read_touch(&x, &y, &z1, &z2) && (z1 > 100) &&
          (x > TS_MINX) && (x < TS_MAXX) && (y > TS_MINY) && (y < TS_MAXY)) {
         TS_Point p;
@@ -189,6 +190,7 @@ if (true) {
 #else
     if ((fifo = touch->bufferSize())) { // 1 or more points await
       TS_Point p = touch->getPoint();
+      release_count = 0;
       if ((p.x > TS_MINX) && (p.x < TS_MAXX) && (p.y > TS_MINY) && (p.y < TS_MAXY)) {
         data->state = LV_INDEV_STATE_PR;  // Is PRESSED
       } else {
@@ -238,7 +240,12 @@ if (true) {
       }
 #endif
     } else {                            // FIFO empty
-      data->state = LV_INDEV_STATE_REL; // Is RELEASED
+      release_count += (release_count < 255);
+      if (release_count >= 3) {
+        data->state = LV_INDEV_STATE_REL; // Is REALLY RELEASED
+      } else {
+        data->state = LV_INDEV_STATE_PR; // Is STILL PRESSED
+      }
     }
 
     data->point.x = last_x; // Last-pressed coordinates
