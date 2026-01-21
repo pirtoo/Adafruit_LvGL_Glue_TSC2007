@@ -100,17 +100,19 @@ void TIMER_ISR(void) {
 
 // TOUCHSCREEN STUFF -------------------------------------------------------
 
-// STMPE610 calibration for raw touch data
-#define TS_MINX 100
+// STMPE610/TSC2007 calibration for raw touch data
+#if TSC2007_TS
+#define TS_MINX 300
 #define TS_MAXX 3800
-#define TS_MINY 100
-#define TS_MAXY 3750
-
+#define TS_MINY 185
+#define TS_MAXY 3700
+#else
 // Same, for ADC touchscreen
 #define ADC_XMIN 325
 #define ADC_XMAX 750
 #define ADC_YMIN 240
 #define ADC_YMAX 840
+#endif //TSC2007_TS
 
 static void touchscreen_read(struct _lv_indev_drv_t *indev_drv,
                              lv_indev_data_t *data) {
